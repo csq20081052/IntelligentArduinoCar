@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="action_button">
+        <item name="android:minWidth">100.0dip</item>
+        <item name="android:minHeight">100.0dip</item>
+    </style>
+    <style name="changemode_button">
+        <item name="android:background">#ffff0000</item>
+        <item name="android:minHeight">100.0dip</item>
+    </style>
+    <style name="changemode_acceler">
+        <item name="android:background">#ff0000ff</item>
+        <item name="android:minHeight">100.0dip</item>
+    </style>
+    <style name="AppBaseTheme" parent="@android:style/Theme.Light" />
+    <style name="AppTheme" parent="@style/AppBaseTheme" />
+</resources>
