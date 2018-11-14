@@ -16,7 +16,9 @@ IntelligentArduinoCar
   * [关键技术](#关键技术)
   * [相关链接](#相关链接)
   * [项目计划](#项目计划)
-
+* [项目进展](#项目进展)
+  * [11.1～11.15工作总结](#11.1～11.15工作总结)
+  
 ### 开题构想
 #### 题目
 
@@ -37,3 +39,6 @@ Intelligent Arduino Car based on TensorFlow SSD-Mobilenet model for Android devi
 #### 项目计划
 * 11.1~11.15： 购买组装Arduino，学习Arduino相关知识，做到使用Arduino控制小车
 
+### 项目进展
+#### 11.1～11.15工作总结
+总结中包括，这两周的工作进展，（如果有的话）阅读资料和项目设计的更改和代码的增加。期待你的进展
