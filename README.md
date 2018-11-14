@@ -18,6 +18,8 @@ IntelligentArduinoCar
   * [项目计划](#项目计划)
 * [项目进展](#项目进展)
   * [第一阶段](#第一阶段)
+    * [功能实现](#功能实现)
+    * [](#相关代码)
   
 ## 开题构想
 ### 题目
@@ -48,8 +50,13 @@ Intelligent Arduino Car based on TensorFlow SSD-Mobilenet model for Android devi
 * 通过手机连接控制Arduino控制模块，实现将手机的信号转化为Arduino可是别的信号
 * 使用Arduino模块控制小车的移动，包括前进、后退以及左右移动
 
+#### 功能实现
 对于第二个内容主要是便硬件层面的，在购买的小车的时候，卖家推荐了`Anduino UNO R3 开发板`和`2路电机&16路舵机驱动板`的组合方案，卖家提前把控制程序烧到了两个电路板中了。这样`2路电机&16路舵机驱动板`只需要接收到`Anduino UNO R3 开发板`传输过来的信号，然后通过连接就可以直接控制小车的移动，这样就不需要太关心硬件层面的东西。
 
 对于第一个功能，之前看[给Android手机加双Arduino翅膀](https://www.arduino.cn/thread-7217-1-1.html)给出的方案的时候是使用USB连接手机和Arduino控制模块的，但是购买设备的时候只有Wifi和蓝牙两种连接方式，后来我买了使用wifi连接的设备，所以只有想其他办法。后来使用socket通信的方式进行连接，`Anduino UNO R3 开发板`加上一个wifi模块，这样就能扩散出一个特定Ip地址的wifi信号，然后手机连接上这个wifi信号就能够将信号传输到Arduino控制模块，实现与手机的互联。
+
+#### 相关代码
+* [arduino嵌入程序](./anduino)
+* [android代码部分](./AndroidSrc)
 
 
