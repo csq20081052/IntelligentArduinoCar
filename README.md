@@ -19,7 +19,7 @@ IntelligentArduinoCar
 * [项目进展](#项目进展)
   * [第一阶段](#第一阶段)
     * [功能实现](#功能实现)
-    * [](#相关代码)
+    * [相关代码](#相关代码)
   
 ## 开题构想
 ### 题目
@@ -39,7 +39,14 @@ Intelligent Arduino Car based on TensorFlow SSD-Mobilenet model for Android devi
 * [给Android手机加双Arduino翅膀](https://www.arduino.cn/thread-7217-1-1.html)
 
 ### 项目计划
-* 11.1~11.15： 购买组装Arduino，学习Arduino相关知识，做到使用Arduino控制小车
+整个项目主要分成三个阶段：
+
+* 第一阶段（11.1~11.15）： 购买组装Arduino，学习Arduino相关知识，做到使用Arduino控制小车
+这一阶段主要是Arduino的学习，从购买组装Arduino小车到实现用android程序控制小车进行基本的前后左右移动，实现遥控的功能。
+* 第二阶段（11.16~12.15）: tensorflow对象识别模型学习，根据项目需要进行个人定制。
+这一阶段集中于tensorflow的学习，主要是对象识别模型，根据给出的android demo,在理解其原理的基础上进行适当的改造，以达到项目的需要，预想的效果就是能够识别特定的物体，能够检测物体在屏幕中的相对位置。
+* 第三阶段（12.15~1.15）: 
+这一阶段需要对前面两个阶段的产物进行一个整合，以达到最终的目的。另外，就是项目优化，如Arduino怎么更灵活地控制小车，tensorflow对象识别模型怎么更精确地识别物体等等，以达到更好的效果。
 
 ## 项目进展
 ### 第一阶段
