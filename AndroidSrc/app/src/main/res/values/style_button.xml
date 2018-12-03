@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="action_button">
+        <item name="android:minHeight">100dip</item>
+        <item name="android:minWidth">100dip</item>
+    </style>
+
+    <style name="changemode_button">
+        <item name="android:minHeight">100dip</item>
+        <item name="android:background">#ff0000</item>
+    </style>
+    
+    <style name="changemode_acceler">
+        <item name="android:minHeight">100dip</item>
+        <item name="android:background">#0000ff</item>
+    </style>
+</resources>

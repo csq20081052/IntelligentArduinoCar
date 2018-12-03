@@ -1,25 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:orientation="vertical" android:background="@drawable/bg" android:layout_width="fill_parent" android:layout_height="fill_parent"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout android:gravity="center" android:id="@id/LinearLayout04" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="40.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="40.0dip">
-        <Button android:textSize="15.0sp" android:textColor="#ffffffff" android:id="@id/w_con" android:background="@drawable/button_style" android:layout_width="wrap_content" android:layout_height="50.0dip" android:text="连接" android:layout_weight="1.0" />
-        <TextView android:layout_width="50.0dip" android:layout_height="wrap_content" />
-        <Button android:textSize="15.0sp" android:textColor="#ffffffff" android:id="@id/w_sz" android:background="@drawable/button_style" android:layout_width="wrap_content" android:layout_height="50.0dip" android:text="修改参数" android:layout_weight="1.0" />
-    </LinearLayout>
-    <LinearLayout android:gravity="center" android:id="@id/LinearLayout02" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="40.0dip" android:layout_marginTop="10.0dip" android:layout_marginRight="40.0dip" android:layout_below="@id/LinearLayout04">
-        <Button android:textSize="15.0sp" android:textColor="#ffffffff" android:id="@id/w_bz" android:background="@drawable/button_style" android:layout_width="wrap_content" android:layout_height="50.0dip" android:text="避障模式" android:layout_weight="1.0" />
-        <TextView android:layout_width="50.0dip" android:layout_height="wrap_content" />
-        <Button android:textSize="15.0sp" android:textColor="#ffffffff" android:id="@id/w_xj" android:background="@drawable/button_style" android:layout_width="wrap_content" android:layout_height="50.0dip" android:text="循迹模式" android:layout_weight="1.0" />
-    </LinearLayout>
-    <TextView android:textSize="10.0dip" android:textColor="#ffffffff" android:gravity="center" android:id="@id/w_title" android:layout_width="fill_parent" android:layout_height="12.0dip" android:layout_centerHorizontal="true" />
-    <Button android:id="@id/w_below" android:background="@drawable/back_style" android:layout_width="75.0dip" android:layout_height="75.0dip" android:layout_marginBottom="15.0dip" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" />
-    <Button android:id="@id/w_stop" android:background="@drawable/stop_style" android:layout_width="75.0dip" android:layout_height="75.0dip" android:layout_above="@id/w_below" android:layout_centerHorizontal="true" />
-    <Button android:id="@id/w_up" android:background="@drawable/up_style" android:layout_width="75.0dip" android:layout_height="75.0dip" android:layout_above="@id/w_stop" android:layout_centerHorizontal="true" />
-    <Button android:id="@id/w_right" android:background="@drawable/right_style" android:layout_width="75.0dip" android:layout_height="75.0dip" android:layout_toRightOf="@id/w_stop" android:layout_above="@id/w_below" />
-    <Button android:id="@id/w_left" android:background="@drawable/left_style" android:layout_width="75.0dip" android:layout_height="75.0dip" android:layout_toLeftOf="@id/w_stop" android:layout_above="@id/w_below" />
-    <ScrollView android:id="@id/w_scro" android:background="@drawable/bg2" android:scrollbars="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="10.0dip" android:layout_marginBottom="15.0dip" android:layout_above="@id/w_up" android:layout_below="@id/LinearLayout02">
-        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
-            <TextView android:textSize="15.0sp" android:textColor="#ffffffff" android:id="@id/w_text" android:layout_width="fill_parent" android:layout_height="fill_parent" android:singleLine="false" />
-        </LinearLayout>
-    </ScrollView>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg" 
+    android:orientation="vertical" >
+ 
+ 
+     	  <LinearLayout android:id="@+id/LinearLayout04" 
+		  android:layout_height="wrap_content" 
+		  android:layout_width="fill_parent" 
+ 		  android:layout_marginTop="10dip"
+		  android:layout_marginLeft="40dip"
+		  android:layout_marginRight="40dip" 
+		  android:gravity="center">
+		    
+		  <Button 
+		   android:background="@drawable/button_style" 
+		   android:layout_width="wrap_content" 
+		  android:layout_height="50dip" 
+		  android:id="@+id/w_con"
+		    android:textColor="#ffffff"
+		  android:layout_weight="1" 
+		  android:textSize="15sp"
+		  android:text="connect">
+		  </Button>
+		  
+		  <TextView   
+            android:layout_width="50dip"   
+            android:layout_height="wrap_content"  
+             /> 
+             
+		  <Button 
+		        android:background="@drawable/button_style" 
+		  android:layout_width="wrap_content" 
+		  	  android:layout_height="50dip" 
+		  android:layout_weight="1"  
+		  android:text="modify" 
+		    android:textColor="#ffffff"
+		  android:textSize="15sp"
+		  android:id="@+id/w_sz">
+		  </Button>
+	  </LinearLayout>  
+	  
+     	  
+     	  
+     	 <LinearLayout android:id="@+id/LinearLayout02" 
+		  android:layout_height="wrap_content" 
+		  android:layout_width="fill_parent" 
+		     android:layout_below="@id/LinearLayout04"
+ 		  android:layout_marginTop="10dip"
+		  android:layout_marginLeft="40dip"
+		  android:layout_marginRight="40dip" 
+		  android:gravity="center">
+		    
+		  <Button 
+		   android:background="@drawable/button_style" 
+		   android:layout_width="wrap_content" 
+		  android:layout_height="50dip" 
+		  android:id="@+id/w_bz"
+		    android:textColor="#ffffff"
+		  android:layout_weight="1" 
+		  android:textSize="15sp"
+		  android:text="obstacle">
+		  </Button>
+		  
+		  <TextView   
+            android:layout_width="50dip"   
+            android:layout_height="wrap_content"  
+             /> 
+             
+		  <Button 
+		        android:background="@drawable/button_style" 
+		  android:layout_width="wrap_content" 
+		  	  android:layout_height="50dip" 
+		  android:layout_weight="1"  
+		  android:text="tracking" 
+		    android:textColor="#ffffff"
+		  android:textSize="15sp"
+		  android:id="@+id/w_xj">
+		  </Button>
+	  </LinearLayout>  
+	  
+     	       	  
+     	       	  
+     	       	  
+        <TextView   
+            android:id="@+id/w_title"
+            android:layout_width="match_parent"   
+            android:layout_height="12dip"  
+             android:textColor="#ffffff"  
+             android:gravity="center"
+               android:textSize="10dip"
+               android:layout_centerHorizontal="true"
+     />  	  
+     	  
+     	  
+ 
+        
+     
+     <Button
+        android:id="@+id/w_below"
+        android:background="@drawable/back_style" 
+        android:layout_width="75dip"
+        android:layout_height="75dip"  
+        android:layout_alignParentBottom="true" 
+        android:layout_centerHorizontal="true"
+         android:layout_marginBottom="15dip"
+     />   
+    
+ 
+     <Button
+        android:id="@+id/w_stop"
+        android:background="@drawable/stop_style" 
+        android:layout_width="75dip"
+        android:layout_height="75dip"  
+        android:layout_above="@id/w_below"    
+        android:layout_centerHorizontal="true"
+        />  
+        
+     
+   <Button
+        android:id="@+id/w_up" 
+        android:background="@drawable/up_style" 
+              android:layout_width="75dip"
+        android:layout_height="75dip" 
+        android:layout_above="@id/w_stop"    
+        android:layout_centerHorizontal="true"
+     />    
+    
+    <Button
+        android:id="@+id/w_right"
+            android:layout_width="75dip"
+            android:background="@drawable/right_style" 
+        android:layout_height="75dip" 
+            android:layout_above="@id/w_below"     
+        android:layout_toRightOf="@id/w_stop"
+       />    
+    
+    <Button
+        android:id="@+id/w_left"
+        android:background="@drawable/left_style" 
+              android:layout_width="75dip"
+        android:layout_height="75dip" 
+            android:layout_above="@id/w_below"     
+        android:layout_toLeftOf="@id/w_stop"
+    />    
+        	  
+     	  
+     	  
+  <ScrollView
+    android:id="@+id/w_scro"
+    android:layout_width="match_parent"    
+    android:layout_height="match_parent"    
+    android:layout_below="@id/LinearLayout02"
+    android:layout_above="@id/w_up"
+    android:scrollbars="vertical"   
+    android:layout_marginBottom="15dip"
+    android:layout_marginTop="10dip"
+     android:background="@drawable/bg2" 
+    >      	  
+     	  
+            <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        > 	
+     	  
+    <TextView   
+            android:id="@+id/w_text"
+            android:layout_width="match_parent"   
+            android:layout_height="match_parent"  
+             android:textColor="#ffffff" 
+             android:singleLine="false"
+               android:textSize="15sp"
+     /> 
+         </LinearLayout>   
+ </ScrollView>       	  
+     	  
+     	  
+ 
+
 </RelativeLayout>

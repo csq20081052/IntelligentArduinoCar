@@ -1,8 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:background="@drawable/bg" android:layout_width="fill_parent" android:layout_height="fill_parent"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView android:textSize="14.0sp" android:id="@id/name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="20.0dip" android:text="深圳四博智联科技有限公司" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" />
-    <TextView android:id="@id/kong" android:layout_width="wrap_content" android:layout_height="1.0dip" android:layout_centerInParent="true" />
-    <Button android:textSize="18.0sp" android:textColor="#ffffffff" android:id="@id/but_wifi" android:background="@drawable/button_style" android:layout_width="120.0dip" android:layout_height="60.0dip" android:text="Wifi模式" android:layout_above="@id/kong" android:layout_centerHorizontal="true" />
-    <Button android:textSize="18.0sp" android:textColor="#ffffffff" android:id="@id/but_blue" android:background="@drawable/button_style" android:layout_width="120.0dip" android:layout_height="60.0dip" android:text="蓝牙模式" android:layout_below="@id/kong" android:layout_centerHorizontal="true" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg" >
+    
+ 
+    
+    <TextView 
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:textSize="14sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dip"/>
+    
+     
+
+        <TextView 
+        android:id="@+id/kong"
+        android:layout_width="wrap_content"
+        android:layout_height="1dip" 
+        android:layout_centerInParent="true"/>
+        
+             <Button
+        android:id="@+id/but_wifi"
+        android:layout_width="120dip"
+        android:layout_height="60dip" 
+         android:text="Wifi"
+         android:textSize="18sp"
+         android:layout_centerHorizontal="true"
+         android:layout_above="@id/kong"
+                         android:textColor="#ffffff"
+     android:background="@drawable/button_style" 
+                      />   
+        
+               <Button
+        android:id="@+id/but_blue"
+        android:layout_width="120dip"
+        android:layout_height="60dip" 
+         android:text="Bluetooth"
+         android:textSize="18sp"
+         android:layout_centerHorizontal="true"
+         android:layout_below="@id/kong"
+                         android:textColor="#ffffff"
+     android:background="@drawable/button_style" 
+                        />  
 </RelativeLayout>
