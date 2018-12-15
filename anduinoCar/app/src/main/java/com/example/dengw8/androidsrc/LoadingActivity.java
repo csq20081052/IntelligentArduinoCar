@@ -10,7 +10,7 @@ import android.widget.Button;
 
 public class LoadingActivity extends Activity {
     private Button but_wifi;
-    private Button but_blue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,21 +23,10 @@ public class LoadingActivity extends Activity {
                 startActivity(intent);
             }
         });
-
-
-        but_blue=findViewById(R.id.but_blue);
-        but_blue.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                Intent intent = new Intent(LoadingActivity.this, BTcar.class);
-                startActivity(intent);
-            }
-        });
-
-
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode==KeyEvent.KEYCODE_BACK ) {
+        if(keyCode == KeyEvent.KEYCODE_BACK ) {
             finish();
 
             return true;

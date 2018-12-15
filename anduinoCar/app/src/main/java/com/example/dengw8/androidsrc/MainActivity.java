@@ -1,8 +1,6 @@
 package com.example.dengw8.androidsrc;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -11,17 +9,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -33,15 +27,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewConfiguration;
-import android.view.View.OnTouchListener;
+
 public class MainActivity extends Activity implements OnTouchListener,OnClickListener {
     public static final String STR_UP = "2";
     public static final String STR_BACK = "8";
@@ -50,10 +36,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
     public static final String STR_STOP = "5";
     public static final String STR_BZ = "3";
     public static final String STR_XJ = "1";
-
-    private static final String ACTION = "com.vk.BTcar.action.NEW_FILE";
-    private static final String ACTION_FINISH = "com.vk.BTcar.action.UPLOAD_FINISH";
-
+    
     private Button btn_up;
     private Button btn_back;
     private Button btn_left;
@@ -65,22 +48,107 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
     private Button btn_sz;
     private Button btn_con;
 
-
-
-    private boolean CON_FLAG=false;
-    private volatile  String   CON=null;
-    private static int         rate=50;
+    private boolean CON_FLAG = false;
+    private volatile String CON = null;
+    private static int rate = 50;
     private startCon thread;
-    TextView  con_text,title;
-    ScrollView  scro;
+    TextView con_text,title;
+    ScrollView scro;
 
 
-    private int js=0;
+    private int js = 0;
     String revdata;
+
+    /**
+     * define socket ip and port
+     */
+    public static final String IP = "192.168.4.1";
+    public static final int PORT = 9000;
+
+    /**
+     * socket client
+     */
     private volatile Socket client;
     private volatile OutputStream out;
     private volatile InputStream input;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btn_xj = findViewById(R.id.w_xj);
+        btn_xj.setOnClickListener(this);
+
+        btn_bz = findViewById(R.id.w_bz);
+        btn_bz.setOnClickListener(this);
+
+        btn_sz = findViewById(R.id.w_sz);
+        btn_sz.setOnClickListener(this);
+
+        btn_con = findViewById(R.id.w_con);
+        btn_con.setOnClickListener(this);
+
+
+        btn_stop = findViewById(R.id.w_stop);
+        btn_stop.setOnClickListener(this);
+
+
+        // touch liten
+        btn_up = findViewById(R.id.w_up);
+        btn_back = findViewById(R.id.w_below);
+        btn_left = findViewById(R.id.w_left);
+        btn_right = findViewById(R.id.w_right);
+
+
+        btn_up.setOnTouchListener(this);
+        btn_back.setOnTouchListener(this);
+        btn_left.setOnTouchListener(this);
+        btn_right.setOnTouchListener(this);
+
+        con_text = findViewById(R.id.w_text);
+        con_text.setText(con_text.getText(), TextView.BufferType.EDITABLE);
+        con_text.setOnClickListener(this);
+
+        title = findViewById(R.id.w_title);
+        scro = findViewById(R.id.w_scro);
+
+
+        disAble();
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (isConnected()) {
+            SocketClient();
+        } else {
+            Toast.makeText(getApplicationContext(),"No network connection", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            if (client != null){
+                client.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        out = null;
+        input = null;
+        CON_FLAG = false;
+
+        if (thread != null) {
+            thread.requestExit();
+        }
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode==KeyEvent.KEYCODE_BACK ) {
             finish();
@@ -90,72 +158,59 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
         return super.onKeyDown(keyCode, event);
     }
 
-    //	8888
-    public static final String IP = "192.168.4.1";
-    public static final int PORT = 9000;
-
     public void SocketClient() {
-
         Thread background = new Thread(new Runnable() {
             public void run() {
                 byte[] buffer = new byte[1024];
                 int bytes;
                 String msg;
                 try {
-
                     client = new Socket(IP, PORT);
-                    out =  client.getOutputStream();
-                    input =client.getInputStream();
+                    out = client.getOutputStream();
+                    input = client.getInputStream();
 
-                    Message msg1=new Message();
-                    msg1.what=0;
+                    Message msg1 = new Message();
+                    msg1.what = 0;
                     handler.sendMessage(msg1);
                 } catch (Exception e) {
                     Message msg1=new Message();
-                    msg1.what=-1;
+                    msg1.what = -1;
                     handler.sendMessage(msg1);
                 }
 
-                if(client!=null){
+                if (client != null) {
                     try {
                         while (true) {
 //	                          msg = input.readUTF();
                             bytes = input.read(buffer);
                             msg = new String(buffer, 0, bytes);
                             if (msg != null && msg.length() > 0){
-                                revdata=msg;
-                                Message msg1=new Message();
-                                msg1.what=1;
+                                revdata = msg;
+                                Message msg1 = new Message();
+                                msg1.what = 1;
                                 handler.sendMessage(msg1);
                             }
                         }
                     } catch (Exception e) {
-
-                        Message msg1=new Message();
-                        msg1.what=-2;
+                        Message msg1 = new Message();
+                        msg1.what = -2;
                         handler.sendMessage(msg1);
                     }
                 }
             }
         });
         background.start();
-
     }
 
-
     public void sendMsg(String msg) {
-
         try {
             out.write((msg).getBytes());
             out.flush();
-
         } catch (Exception e) {
-            Message msg1=new Message();
-            msg1.what=-2;
+            Message msg1 = new Message();
+            msg1.what = -2;
             handler.sendMessage(msg1);
-
         }
-
     }
 
     public void closeSocket() {
@@ -168,210 +223,66 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
         }
 
         out = null;
-        input=null;
+        input = null;
         CON_FLAG=false;
 
         if (thread != null)
             thread.requestExit();
     }
 
-
-    public  boolean isConn(){
-        boolean bisConnFlag=false;
+    public boolean isConnected() {
+        boolean bisConnFlag = false;
         ConnectivityManager conManager = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo network = conManager.getActiveNetworkInfo();
-        if(network!=null){
-            bisConnFlag=conManager.getActiveNetworkInfo().isAvailable();
+        if(network != null){
+            bisConnFlag = conManager.getActiveNetworkInfo().isAvailable();
         }
         return bisConnFlag;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if(isConn()){
-            SocketClient();
-
-        }else{
-            Toast.makeText(getApplicationContext(),"No network connection", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            if (client != null){
-                client.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        out = null;
-        input=null;
-        CON_FLAG=false;
-
-        if (thread != null)
-            thread.requestExit();
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-//		unregisterReceiver(this.UploadList);
-//
-//		Intent serviceIntent = new Intent();
-//        serviceIntent.setAction("com.vk.BTcar.service");
-//        stopService(serviceIntent);
-
-//        unbindService(serviceIntent);
-
-        try {
-            if (client != null){
-                client.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        out = null;
-        input=null;
-        CON_FLAG=false;
-
-        if (thread != null)
-            thread.requestExit();
-    }
-
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.wifi);
-
-        // liten buttons
-        btn_xj = (Button)findViewById(R.id.w_xj);
-        btn_xj.setOnClickListener(this);
-
-        btn_bz= (Button)findViewById(R.id.w_bz);
-        btn_bz.setOnClickListener(this);
-
-        btn_sz = (Button)findViewById(R.id.w_sz);
-        btn_sz.setOnClickListener(this);
-
-        btn_con= (Button)findViewById(R.id.w_con);
-        btn_con.setOnClickListener(this);
-
-
-
-        btn_stop= (Button)findViewById(R.id.w_stop);
-        btn_stop.setOnClickListener(this);
-
-
-        // touch liten
-        btn_up= (Button)findViewById(R.id.w_up);
-        btn_back= (Button)findViewById(R.id.w_below);
-        btn_left= (Button)findViewById(R.id.w_left);
-        btn_right= (Button)findViewById(R.id.w_right);
-
-
-        btn_up.setOnTouchListener(this);
-        btn_back.setOnTouchListener(this);
-        btn_left.setOnTouchListener(this);
-        btn_right.setOnTouchListener(this);
-
-        con_text = (TextView)findViewById(R.id.w_text);
-        con_text.setText(con_text.getText(), TextView.BufferType.EDITABLE);
-        con_text.setOnClickListener(this);
-//				setOnLongClickListener(new View.OnLongClickListener() {
-//					@Override
-//			       public boolean onLongClick(View v) {
-//						  con_text.setText("");
-//						  Toast.makeText(getApplicationContext(),"清屏", Toast.LENGTH_SHORT).show();
-//						  return true;
-//					 }
-//				 });
-        title = (TextView)findViewById(R.id.w_title);
-        scro = (ScrollView)findViewById(R.id.w_scro);
-
-
-        disAble();
-
-
-//		IntentFilter filter = new IntentFilter(ACTION_FINISH);
-//		registerReceiver(this.UploadList, filter);
-//
-//		Intent serviceIntent = new Intent();
-//		serviceIntent.setAction("com.vk.BTcar.service");
-//		bindService(serviceIntent, new ServiceConnection() {
-//
-//			@Override
-//			public void onServiceDisconnected(ComponentName name) {
-//
-//			}
-//
-//			@Override
-//			public void onServiceConnected(ComponentName name, IBinder service) {
-//
-//			}
-//		}, Context.BIND_AUTO_CREATE);
-//		startService(serviceIntent);
-    }
-
-
-
     private final BroadcastReceiver UploadList = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String str=intent.getStringExtra("RESULT");
+            String str = intent.getStringExtra("RESULT");
+            switch (str) {
+                case "1":
+                    Able();
+                    CON_FLAG = true;
+                    CON = null;
 
-            if(str.equals("1")){
-                Able();
-                CON_FLAG=true;
-                CON=null;
+                    thread = new startCon();
+                    thread.requestStart();
+                    thread.start();
+                    title.setText("connected");
+                    break;
+                case "end":
+                    str="Device is not connected, please exit app！";
+                    Toast.makeText(getApplicationContext(),str, Toast.LENGTH_SHORT).show();
+                    disAble();
+                    finish();
+                    break;
+                case "r":
+                    Toast.makeText(getApplicationContext(),"conected", Toast.LENGTH_SHORT).show();
+                    break;
+                case "3":
+                    js++;
+                    if(js==5){
+                        js=1;
+                    }
+                    String s=repeat(".",js);
+                    title.setText("connecting"+s);
+                    break;
+                case "msg":
+                    str = intent.getStringExtra("CON");
 
-                thread = new startCon();
-                thread.requestStart();
-                thread.start();
-                title.setText("connected");
-            }else if(str.equals("end")){
-                str="Device is not connected, please exit app！";
-                Toast.makeText(getApplicationContext(),str, Toast.LENGTH_SHORT).show();
-                disAble();
-
-//	        		Intent serviceIntent = new Intent();
-//	                serviceIntent.setAction("com.remote.carsocket");
-//	                stopService(serviceIntent);
-//
-//	        		if (thread != null)
-//	        			thread.requestExit();
-//
-//	        		CON_FLAG=false;
-
-                finish();
-            }else if(str.equals("r")){
-                Toast.makeText(getApplicationContext(),"conected", Toast.LENGTH_SHORT).show();
-            }else if(str.equals("3")){
-                js++;
-                if(js==5){
-                    js=1;
-                }
-                String s=repeat(".",js);
-                title.setText("connecting"+s);
-            }else if(str.equals("msg")){
-                str=intent.getStringExtra("CON");
-
-                Editable text = (Editable)con_text.getText();
-                text.append(str);
-                text.append("\n");
-                con_text.setText(text);
-                scro.fullScroll(ScrollView.FOCUS_DOWN);
+                    Editable text = (Editable)con_text.getText();
+                    text.append(str);
+                    text.append("\n");
+                    con_text.setText(text);
+                    scro.fullScroll(ScrollView.FOCUS_DOWN);
+                    break;
+                default:
+                    break;
             }
         }
     };
@@ -397,7 +308,7 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
         btn_con.setEnabled(true);
     }
 
-    private void Able(){
+    private void Able() {
         btn_stop.setEnabled(true);
         btn_up.setEnabled(true);
         btn_back.setEnabled(true);
@@ -411,63 +322,40 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
     }
 
 
-
-
     public boolean onTouch(View v, MotionEvent event) {
         switch (v.getId()) {
             case R.id.w_below:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    CON=STR_BACK;
+                    CON = STR_BACK;
                 }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    CON=null;
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
+                    CON = null;
                 }
                 break;
             case R.id.w_up:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    CON=STR_UP;
+                    CON = STR_UP;
                 }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    CON=null;
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
+                    CON = null;
                 }
                 break;
             case R.id.w_left:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    CON=STR_LEFT;
+                    CON = STR_LEFT;
                 }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     CON=null;
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
                 }
                 break;
             case R.id.w_right:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    CON=STR_RIGHT;
+                    CON = STR_RIGHT;
                 }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    CON=null;
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
-                    sendMsg(STR_STOP);
+                    CON = null;
                 }
                 break;
-
             default:
                 break;
         }
@@ -500,7 +388,6 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
                 }
                 break;
             case R.id.w_sz:
-
                 final EditText et = new EditText(MainActivity.this);
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Modify obstacle avoidance parameters")
@@ -521,7 +408,6 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
             case R.id.w_text:
                 con_text.setText("");
                 Toast.makeText(getApplicationContext(),"clear", Toast.LENGTH_SHORT).show();
-
                 break;
             default:
                 break;
@@ -534,7 +420,6 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-
                     Editable text = (Editable)con_text.getText();
                     text.append(revdata);
                     text.append("\n");
@@ -594,36 +479,30 @@ public class MainActivity extends Activity implements OnTouchListener,OnClickLis
         sendMsg(data);
     }
 
-    private class startCon extends Thread{
+    private class startCon extends Thread {
         public boolean FALG;
         public void requestExit(){
-            FALG=false;
-
+            FALG = false;
         }
         public void requestStart(){
             FALG = true;
         }
         public void run() {
-
-            while(FALG){
-                try{
-                    if(CON!=null){
+            while (FALG){
+                try {
+                    if(CON != null){
                         sendToCar(CON);
-
                     }
-                }catch(Exception ex){
+                } catch (Exception ex){
+                    ex.printStackTrace();
                 }
 
                 try {
                     Thread.sleep(rate);
                 } catch (InterruptedException e1) {
+                    e1.printStackTrace();
                 }
             }
-
-
         }
     }
-
-
-
 }

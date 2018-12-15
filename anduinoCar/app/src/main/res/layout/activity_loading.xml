@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg" >
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dip"
+        />
+
+    <TextView
+        android:id="@+id/kong"
+        android:layout_width="wrap_content"
+        android:layout_height="1dip"
+        android:layout_centerInParent="true"
+        />
+
+    <Button
+        android:id="@+id/but_wifi"
+        android:layout_width="120dip"
+        android:layout_height="60dip"
+        android:text="Wifi"
+        android:textSize="18sp"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/kong"
+        android:textColor="#ffffff"
+        android:background="@drawable/button_style"
+        />
+
+</RelativeLayout>
