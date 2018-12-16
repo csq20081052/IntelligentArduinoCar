@@ -21,7 +21,8 @@ IntelligentArduinoCar
     * [功能实现](#功能实现)
     * [相关代码](#相关代码)
   * [第二阶段](#第二阶段)
-  	* [第一部分](#第一部分)（当前）
+  	* [第一部分](#第一部分)
+	* [第二部分](#第二部分)（当前）
   
 ## 开题构想
 ### 题目
@@ -88,3 +89,118 @@ Intelligent Arduino Car based on TensorFlow SSD-Mobilenet model for Android devi
 ```
 时间：2018.12.1 ～ 2018.12.15
 ``` 
+这一部分主要是结合demo理解tensorflow物体识别相关部分的源码。
+
+项目中的重要的文件：
+* assets：pb文件存放训练好的TensorFlow模型，txt文件为能够识别的物体的名字，也叫label。model和label成对出现。官方给出的inceptionV1模型能够识别1000种物体，基本能够满足我们的日常需求。添加自己的模型时，需要在assets目录中加入自己训练好的model和对应label文件。我们打开项目中的`coco_labels_list.txt`就可以看到tensorflow已经支持的一些可以识别出的物体。
+
+通过查看相关代码发现，前期很多工作就是捕捉摄像头的预览图像，然后将图像对应的矩阵作为参数传给tensorflow提供的接口进行处理，然后返回数据。获取预览图像不是我们这儿研究的重点，着重看一下对象识别相关的代码。
+
+与物体识别相关部分代码的理解：
+* 构建探测器（分类器）
+```java
+  classifier =
+      TensorFlowImageClassifier.create(
+          getAssets(),
+          MODEL_FILE,
+          LABEL_FILE,
+          INPUT_SIZE,
+          IMAGE_MEAN,
+          IMAGE_STD,
+          INPUT_NAME,
+          OUTPUT_NAME);
+```
+构造分类器，利用了TensorFlow训练出来的 Model，也就是上面我们介绍的assets里面的 .pb 文件，这是后面做物体分类识别的关键。在这个方法内部详细分为一下几个步骤：
+1. 构造TensorFlowImageClassifier分类器，inputName和outputName分别为模型输入节点和输出节点的名字
+```java
+  TensorFlowImageClassifier c = new TensorFlowImageClassifier();
+  c.inputName = inputName;
+  c.outputName = outputName;
+``` 
+2. 读取label文件内容，将内容设置到出classifier的labels数组中
+```java
+    // 读取label文件流，label文件表征了可以识别出来的物体分类。我们预测的物体名称就是其中之一。
+    br = new BufferedReader(new InputStreamReader(assetManager.open(actualFilename)));
+    // 将label存储到TensorFlowImageClassifier的labels数组中
+    String line;
+    while ((line = br.readLine()) != null) {
+      c.labels.add(line);
+    }
+    br.close();
+```
+3.  读取model文件名，并设置到classifier的interface变量中
+```java
+c.inferenceInterface = new TensorFlowInferenceInterface(assetManager, modelFilename);
+```
+4. 利用输出节点名称，获取输出节点的shape，也就是最终分类的数目
+```java
+  // 输出的shape为二维矩阵[N, NUM_CLASSES], N为batch size，也就是一批训练的图片个数。NUM_CLASSES为分类个数
+  final Operation operation = c.inferenceInterface.graphOperation(outputName);
+  final int numClasses = (int) operation.output(0).shape().size(1);
+```
+5. 设置分类器的其他变量
+```java
+  c.inputSize = inputSize;    // 物体分类预测时输入图片的尺寸。也就是相机原始图片裁剪后的图片。默认为224*224
+  c.imageMean = imageMean;    // 像素点RGB通道的平均值，默认为117。用来将0~255的数值做归一化的
+  c.imageStd = imageStd;      // 像素点RGB通道的归一化比例，默认为1
+```
+6. 分配Buffer给输出变量
+```java
+  c.outputNames = new String[] {outputName};    // 输出节点名字
+  c.intValues = new int[inputSize * inputSize];
+  c.floatValues = new float[inputSize * inputSize * 3];     // RGB三通道
+  c.outputs = new float[numClasses];            // 预测完的结果，也就是图片对应到每个分类的概率。我们取概率最大的前三个显示在app中
+
+```
+
+* 利用TensorFlow模型来处理图片
+利用上面构建的分类起对图片进行预测分析，得到图片为每个分类的概率
+```java
+final List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap);
+```
+这儿我们重点来看分类器是如何来识别图片的。也就是 `classifier.recognizeImage()`
+
+```java
+public List<Recognition> recognizeImage(final Bitmap bitmap) {
+  // 1 预处理输入图片，读取像素点，并将RGB三通道数值归一化. 归一化后分布于 -117 ~ 138
+  bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+  for (int i = 0; i < intValues.length; ++i) {
+    final int val = intValues[i];
+    floatValues[i * 3 + 0] = (((val >> 16) & 0xFF) - imageMean) / imageStd;   // 归一化通道R
+    floatValues[i * 3 + 1] = (((val >> 8) & 0xFF) - imageMean) / imageStd;    // 归一化通道G
+    floatValues[i * 3 + 2] = ((val & 0xFF) - imageMean) / imageStd;           // 归一化通道B
+  }
+  Trace.endSection();
+
+  // 2 将输入数据填充到TensorFlow中，并feed数据给模型
+  // inputName为输入节点
+  // floatValues为输入tensor的数据源，
+  // dims构成了tensor的shape, [batch_size, height, width, in_channel], 此处为[1, inputSize, inputSize, 3]
+  Trace.beginSection("feed");
+  inferenceInterface.feed(inputName, floatValues, 1, inputSize, inputSize, 3);
+  Trace.endSection();
+
+  // 3 跑TensorFlow预测模型
+  // outputNames为输出节点名， 通过session来run tensor
+  Trace.beginSection("run");
+  inferenceInterface.run(outputNames, logStats);
+  Trace.endSection();
+
+  // 4 将tensorflow预测模型输出节点的输出值拷贝出来
+  // 找到输出节点outputName的tensor，并复制到outputs中。outputs为分类预测的结果，是一个一维向量，每个值对应labels中一个分类的概率。
+  Trace.beginSection("fetch");
+  inferenceInterface.fetch(outputName, outputs);
+  Trace.endSection();
+  
+  ...
+}
+```
+
+图片识别主要分为以下几步：
+1. 预处理输入图片，读取像素点，并将RGB三通道数值归一化. 归一化后分布于 -117 ~ 138
+2. 将输入数据填充到 TensorFlow 中，并feed数据给模型
+3. 跑 TensorFlow 预测模型
+4. 将 tensorflow 预测模型输出节点的输出值拷贝出来
+
+TensorFlow-Android sdk对TensorFlow封装得很好，暴露了TensorFlowInferenceInterface这个对象来作为接口供我们调用底层TensorFlow代码。其中feed用来填充输入图片，run用来跑模型并得到结果，fetch用来从TensorFlow内部获取输出节点的输出值。
+
